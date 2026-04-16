@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fuckEmDash</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app-root" class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">fuckEmDash</h1>
+                <div class="header-controls">
+                    <button id="keyboard-guide-btn" class="icon-button keyboard-icon shortcuts-icon" aria-label="Show keyboard shortcuts" title="Keyboard Guide">
+                        <p>Keyboard Guide </p>
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/>
+                            <path d="M7 9h2M11 9h2M15 9h2M7 13h10" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button id="settings-btn" class="icon-button settings-icon" aria-label="Open settings" title="Settings">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24M19.78 19.78l-4.24-4.24M19.78 4.22l-4.24 4.24" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button id="theme-toggle-btn" class="icon-button theme-icon" aria-label="Toggle theme" title="Toggle Theme">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                            <path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="12" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="editor-panes">
+                <!-- Input Pane -->
+                <div class="pane input-pane">
+                    <div class="pane-header">Input</div>
+                    <textarea id="input-text" class="editor-textarea" placeholder="Paste your text here..."></textarea>
+                    <div id="input-stats" class="stats-bar">
+                        <span class="stat">Words: <span class="stat-value">0</span></span>
+                        <span class="stat">Lines: <span class="stat-value">0</span></span>
+                        <span class="stat">Chars: <span class="stat-value">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Output Pane -->
+                <div class="pane output-pane">
+                    <div class="pane-header">Output</div>
+                    <textarea id="output-text" class="editor-textarea" readonly placeholder="Output will appear here..."></textarea>
+                    <div class="output-footer">
+                        <div id="output-stats" class="stats-bar">
+                            <span class="stat">Words: <span class="stat-value">0</span></span>
+                            <span class="stat">Lines: <span class="stat-value">0</span></span>
+                            <span class="stat">Chars: <span class="stat-value">0</span></span>
+                        </div>
+                        <button id="copy-output-btn" class="icon-button copy-button" title="Copy output (Ctrl+Shift+C)" aria-label="Copy output">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="toolbar-pill" data-feature="characters" title="Alt + 1">
+                <span class="pill-label">Characters</span>
+                <span class="pill-status">ON</span>
+            </button>
+            <button class="toolbar-pill" data-feature="phrases" title="Alt + 2">
+                <span class="pill-label">Phrases</span>
+                <span class="pill-status">Auto</span>
+            </button>
+            <button class="toolbar-pill" data-feature="stats" title="Alt + 3">
+                <span class="pill-label">Stats</span>
+                <span class="pill-status">ON</span>
+            </button>
+            <button class="toolbar-pill" data-feature="detection" title="Alt + 4">
+                <span class="pill-label">Missed Copy</span>
+                <span class="pill-status">ON</span>
+            </button>
+        </div>
+
+        <!-- Settings Overlay -->
+        <div id="settings-overlay" class="settings-overlay" aria-hidden="true">
+            <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+                <aside class="settings-rail">
+                    <div class="rail-header">
+                        <h2 id="settings-title">Settings</h2>
+                    </div>
+                    <nav class="rail-tabs">
+                        <button class="rail-tab active" data-tab="characters">Character Fixer</button>
+                        <button class="rail-tab" data-tab="phrases">Word Fixer</button>
+                        <button class="rail-tab" data-tab="detection">Missed Copy</button>
+                        <button class="rail-tab" data-tab="wordcount">Word Count</button>
+                    </nav>
+                </aside>
+
+                <section class="settings-panel">
+                    <div class="panel-top">
+                        <button class="icon-button close-button" id="close-settings" aria-label="Close settings" title="Esc">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                                <path d="M6 6l12 12M18 6l-12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="settings-content">
+                        <!-- Character Fixer Tab -->
+                        <div id="tab-characters" class="tab-content active">
+                            <div class="tab-heading">
+                                <div>
+                                    <h3>Character Fixer</h3>
+                                    <p class="tab-subtitle">Normalize punctuation and spacing that often appears in AI-generated text.</p>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Enable Character Fixer</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="char-fixer-toggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Character</th>
+                                            <th>Replacement</th>
+                                            <th>Enabled</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="char-mappings">
+                                        <!-- Generated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-footer">
+                                <button class="primary-button add-button">+ Add Mapping</button>
+                            </div>
+                        </div>
+
+                        <!-- Word Fixer Tab -->
+                        <div id="tab-phrases" class="tab-content">
+                            <div class="tab-heading">
+                                <div>
+                                    <h3>Word Fixer</h3>
+                                    <p class="tab-subtitle">Replace overused AI-ish words with more natural alternatives.</p>
+                                </div>
+                            </div>
+                            <div class="segmented-control">
+                                <label class="segment">
+                                    <input type="radio" name="phrase-mode" value="manual">
+                                    <span>Manual</span>
+                                </label>
+                                <label class="segment">
+                                    <input type="radio" name="phrase-mode" value="auto" checked>
+                                    <span>Auto</span>
+                                </label>
+                            </div>
+                            <p class="helper-text">Auto runs seamlessly on every keystroke. Manual requires pressing Apply (Alt+2).</p>
+                            <div class="table-wrap">
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Phrase</th>
+                                            <th>Replacement</th>
+                                            <th>Enabled</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="phrase-mappings">
+                                        <!-- Generated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-footer">
+                                <button class="primary-button add-button" id="add-phrase-btn">+ Add Words</button>
+                            </div>
+                        </div>
+
+                        <!-- AI Detection Tab -->
+                        <div id="tab-detection" class="tab-content">
+                            <div class="tab-heading">
+                                <div>
+                                    <h3>Missed Copy</h3>
+                                    <p class="tab-subtitle">Identify common AI intros, outlines, and sign-offs.</p>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Enable Missed Copy</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="detection-toggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="settings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Regex Pattern</th>
+                                            <th>Position</th>
+                                            <th>Enabled</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detection-patterns">
+                                        <!-- Generated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-footer">
+                                <button class="primary-button add-button" id="add-rule-btn">+ Add Rule</button>
+                            </div>
+                        </div>
+
+                        <!-- Word Count Tab -->
+                        <div id="tab-wordcount" class="tab-content">
+                            <div class="tab-heading">
+                                <div>
+                                    <h3>Word Count</h3>
+                                    <p class="tab-subtitle">Adjust how the stats bar calculates your word total.</p>
+                                </div>
+                            </div>
+                            <div class="mode-cards">
+                                <label class="mode-card">
+                                    <input type="radio" name="wordcount-mode" value="strict" checked>
+                                    <div>
+                                        <strong>Strict</strong>
+                                        <p>Count every token. (e.g., I, if, as, to, and)</p>
+                                    </div>
+                                </label>
+                                <label class="mode-card">
+                                    <input type="radio" name="wordcount-mode" value="mild">
+                                    <div>
+                                        <strong>Mild</strong>
+                                        <p>Ignore very common small function words.</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <div id="mild-tags" class="tag-input" aria-live="polite">
+                                <div class="tag-list"></div>
+                                <input type="text" id="tag-input" placeholder="Add ignored word" aria-label="Add ignored word">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Dialog -->
+        <div id="keyboard-dialog" class="keyboard-dialog">
+            <div class="keyboard-modal">
+                <div class="keyboard-header">
+                    <h2>Keyboard Shortcuts</h2>
+                    <button class="keyboard-close" id="close-keyboard" aria-label="Close">×</button>
+                </div>
+                <div class="keyboard-content">
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr class="table-header">
+                                <th>Action</th>
+                                <th>Shortcut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shortcuts-tbody">
+                            <!-- Generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Phrase Dialog -->
+        <div id="phrase-dialog" class="dialog-overlay" aria-hidden="true">
+            <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="phrase-dialog-title">
+                <div class="dialog-header">
+                    <h3 id="phrase-dialog-title">Add Words</h3>
+                    <button class="icon-button close-button" id="close-phrase-dialog" aria-label="Close">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                            <path d="M6 6l12 12M18 6l-12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="dialog-body">
+                    <label class="field">
+                        <span>Phrase</span>
+                        <input type="text" id="phrase-input" placeholder="e.g., leverage">
+                    </label>
+                    <label class="field">
+                        <span>Replacement</span>
+                        <input type="text" id="phrase-replacement-input" placeholder="e.g., use">
+                    </label>
+                </div>
+                <div class="dialog-footer">
+                    <button class="secondary-button" id="cancel-phrase-dialog">Cancel</button>
+                    <button class="primary-button" id="save-phrase-dialog">Add Words</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Rule Dialog -->
+        <div id="rule-dialog" class="dialog-overlay" aria-hidden="true">
+            <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="rule-dialog-title">
+                <div class="dialog-header">
+                    <h3 id="rule-dialog-title">Add Rule</h3>
+                    <button class="icon-button close-button" id="close-rule-dialog" aria-label="Close">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                            <path d="M6 6l12 12M18 6l-12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="dialog-body">
+                    <label class="field">
+                        <span>Regex Pattern</span>
+                        <input type="text" id="rule-pattern-input" placeholder="e.g., ^Certainly[,!]?">
+                    </label>
+                    <label class="field">
+                        <span>Position</span>
+                        <select id="rule-position-input">
+                            <option value="start">Start</option>
+                            <option value="end">End</option>
+                            <option value="any">Any</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="dialog-footer">
+                    <button class="secondary-button" id="cancel-rule-dialog">Cancel</button>
+                    <button class="primary-button" id="save-rule-dialog">Add Rule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
