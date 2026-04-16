@@ -53,7 +53,15 @@
 
                 <!-- Output Pane -->
                 <div class="pane output-pane">
-                    <div class="pane-header">Output</div>
+                    <div class="pane-header">
+                        <span>Output</span>
+                        <button id="emoji-toggle-btn" class="icon-button emoji-icon" aria-label="Toggle emoji remover" title="Toggle Emoji Remover (Q)">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 10l2 2m4-2l2 2M8 15h8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
                     <textarea id="output-text" class="editor-textarea" readonly placeholder="Output will appear here..."></textarea>
                     <div class="output-footer">
                         <div id="output-stats" class="stats-bar">
@@ -103,6 +111,7 @@
                         <button class="rail-tab active" data-tab="characters">Character Fixer</button>
                         <button class="rail-tab" data-tab="phrases">Word Fixer</button>
                         <button class="rail-tab" data-tab="detection">Missed Copy</button>
+                        <button class="rail-tab" data-tab="emoji">Emoji Remover</button>
                         <button class="rail-tab" data-tab="wordcount">Word Count</button>
                     </nav>
                 </aside>
@@ -225,6 +234,37 @@
                                 <button class="primary-button add-button" id="add-rule-btn">+ Add Rule</button>
                             </div>
                         </div>
+
+                        <!-- Emoji Remover Tab -->
+                        <div id="tab-emoji" class="tab-content">
+                            <div class="tab-heading">
+                                <div>
+                                    <h3>Emoji Remover</h3>
+                                    <p class="tab-subtitle">Automatically remove all emojis from your text.</p>
+                                </div>
+                                <div class="toggle-row">
+                                    <span>Enable Emoji Remover</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emoji-remover-toggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="feature-info">
+                                <p>This feature removes all emoji characters from your text, including:</p>
+                                <ul class="feature-list">
+                                    <li>Smileys & emotions</li>
+                                    <li>People & body parts</li>
+                                    <li>Animals & nature</li>
+                                    <li>Food & drink</li>
+                                    <li>Travel & places</li>
+                                    <li>Activities & sports</li>
+                                    <li>Objects</li>
+                                    <li>Symbols</li>
+                                </ul>
+                            </div>
+                        </div>
+
 
                         <!-- Word Count Tab -->
                         <div id="tab-wordcount" class="tab-content">
