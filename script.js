@@ -8,6 +8,7 @@ const state = {
     autoPhrasesEnabled: true,
     statsVisible: true,
     detectionEnabled: true,
+    emojiRemoverEnabled: false,
 
     // Settings modes
     wordCountMode: 'strict',           // 'strict' or 'mild'
@@ -65,6 +66,7 @@ const DOM = {
     settingsBtn: document.getElementById('settings-btn'),
     keyboardGuideBtn: document.getElementById('keyboard-guide-btn'),
     themeToggleBtn: document.getElementById('theme-toggle-btn'),
+    emojiToggleBtn: document.getElementById('emoji-toggle-btn'),
     copyOutputBtn: document.getElementById('copy-output-btn'),
     settingsOverlay: document.getElementById('settings-overlay'),
     settingsModal: document.querySelector('.settings-modal'),
@@ -89,6 +91,7 @@ const DOM = {
     toolbar: document.querySelector('.toolbar'),
     charFixerToggle: document.getElementById('char-fixer-toggle'),
     detectionToggle: document.getElementById('detection-toggle'),
+    emojiRemoverToggle: document.getElementById('emoji-remover-toggle'),
     charMappingsContainer: document.getElementById('char-mappings'),
     phraseMappingsContainer: document.getElementById('phrase-mappings'),
     detectionPatternsContainer: document.getElementById('detection-patterns'),
@@ -115,6 +118,7 @@ function saveState() {
         autoPhrasesEnabled: state.autoPhrasesEnabled,
         statsVisible: state.statsVisible,
         detectionEnabled: state.detectionEnabled,
+        emojiRemoverEnabled: state.emojiRemoverEnabled,
         wordCountMode: state.wordCountMode,
         phraseMap: state.phraseMap,
         charMap: state.charMap,
@@ -138,6 +142,7 @@ function loadState() {
         state.autoPhrasesEnabled = parsed.autoPhrasesEnabled ?? state.autoPhrasesEnabled;
         state.statsVisible = parsed.statsVisible ?? state.statsVisible;
         state.detectionEnabled = parsed.detectionEnabled ?? state.detectionEnabled;
+        state.emojiRemoverEnabled = parsed.emojiRemoverEnabled ?? state.emojiRemoverEnabled;
         state.wordCountMode = parsed.wordCountMode || state.wordCountMode;
         state.phraseMap = parsed.phraseMap || state.phraseMap;
         state.charMap = parsed.charMap || state.charMap;
@@ -235,6 +240,19 @@ function parseCharInput(value) {
     }
     return trimmed;
 }
+// ============================================================================
+// EMOJI REMOVER
+// ============================================================================
+
+function removeEmojis(text) {
+    if (!state.emojiRemoverEnabled) return text;
+
+    // Unicode ranges for emojis
+    const emojiPattern = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2300}-\u{23FF}]|[\u{2B50}]|[\u{2B55}]|[\u{200D}]|[\u{FE0F}]/gu;
+    
+    return text.replace(emojiPattern, '').replace(/\s+/g, ' ').trim();
+}
+
 
 function escapeHtml(value) {
     return String(value)
@@ -335,6 +353,9 @@ function runDetection(text) {
 function processPipeline(raw) {
     let text = raw;
 
+    // Step 0: Emoji Remover
+    text = removeEmojis(text);
+
     // Step 1: Character Fixer
     text = sanitizeCharacters(text);
 
@@ -399,6 +420,10 @@ function updateToolbarPills() {
             case 'detection':
                 pill.classList.toggle('active', state.detectionEnabled);
                 statusEl.textContent = state.detectionEnabled ? 'ON' : 'OFF';
+                break;
+            case 'emoji':
+                pill.classList.toggle('active', state.emojiRemoverEnabled);
+                statusEl.textContent = state.emojiRemoverEnabled ? 'ON' : 'OFF';
                 break;
         }
     });
@@ -493,6 +518,22 @@ function toggleTheme() {
 
 if (DOM.themeToggleBtn) {
     DOM.themeToggleBtn.addEventListener('click', toggleTheme);
+}
+
+// Emoji Remover Button in Header
+if (DOM.emojiToggleBtn) {
+    DOM.emojiToggleBtn.addEventListener('click', () => {
+        state.emojiRemoverEnabled = !state.emojiRemoverEnabled;
+        updateToolbarPills();
+        updateEmojiToggleButton();
+        renderOutputAndStats();
+        scheduleSave();
+    });
+}
+
+function updateEmojiToggleButton() {
+    if (!DOM.emojiToggleBtn) return;
+    DOM.emojiToggleBtn.classList.toggle('active', state.emojiRemoverEnabled);
 }
 
 // ============================================================================
@@ -753,6 +794,19 @@ DOM.detectionToggle.addEventListener('change', e => {
 // Set initial detection toggle
 DOM.detectionToggle.checked = state.detectionEnabled;
 
+// Emoji Remover Toggle
+if (DOM.emojiRemoverToggle) {
+    DOM.emojiRemoverToggle.addEventListener('change', e => {
+        state.emojiRemoverEnabled = e.target.checked;
+        renderOutputAndStats();
+        updateToolbarPills();
+        scheduleSave();
+    });
+
+    // Set initial emoji toggle
+    DOM.emojiRemoverToggle.checked = state.emojiRemoverEnabled;
+}
+
 function renderDetectionPatterns() {
     DOM.detectionPatternsContainer.innerHTML = '';
 
@@ -896,6 +950,7 @@ const KEYBOARD_SHORTCUTS = [
     { action: 'Apply/Toggle Phrases', shortcut: 'Alt + 2' },
     { action: 'Toggle Stats Visibility', shortcut: 'Alt + 3' },
     { action: 'Acknowledge Missed Copy', shortcut: 'Alt + 4' },
+    { action: 'Toggle Emoji Remover', shortcut: 'Q' },
     { action: 'Open/Close Settings', shortcut: 'Alt + S / Ctrl + Shift + S' },
     { action: 'Show Keyboard Shortcuts', shortcut: '⌘K / Ctrl + K' },
     { action: 'Copy Output', shortcut: 'Ctrl + Shift + C' },
@@ -1174,6 +1229,15 @@ function handleKeyboardShortcuts(e) {
                     openSettings();
                 }
                 break;
+        }
+    }
+
+    // Q - Toggle emoji remover (only when not typing in input)
+    if ((e.key === 'q' || e.key === 'Q') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const activeElement = document.activeElement;
+        if (activeElement !== DOM.inputEl && activeElement !== DOM.outputEl) {
+            e.preventDefault();
+            DOM.emojiToggleBtn.click();
         }
     }
 

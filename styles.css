@@ -257,6 +257,35 @@ body::before {
     border-bottom: 1px solid var(--border-soft);
     text-transform: uppercase;
     letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.pane-header > span {
+    flex: 1;
+}
+
+.pane-header .emoji-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0.25rem;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.pane-header .emoji-icon:hover {
+    opacity: 0.8;
+}
+
+.pane-header .emoji-icon.active {
+    background: var(--accent-primary);
+    color: white;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.4);
 }
 
 .editor-textarea {
@@ -768,6 +797,39 @@ body::before {
 .tab-footer {
     margin-top: 14px;
 }
+
+.feature-info {
+    background: rgba(123, 104, 238, 0.05);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.feature-info p {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.feature-list li {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border-left: 2px solid var(--accent-primary);
+}
+
 
 .mode-cards {
     display: grid;
