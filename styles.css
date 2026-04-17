@@ -267,6 +267,12 @@ body::before {
     flex: 1;
 }
 
+.pane-header .header-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
 .pane-header .emoji-icon {
     width: 28px;
     height: 28px;
@@ -698,8 +704,16 @@ body::before {
 .table-wrap {
     border: 1px solid var(--border-soft);
     border-radius: 8px;
-    overflow: hidden;
+    /* Each rules table should scroll within its own area */
+    max-height: min(52vh, 520px);
+    overflow: auto;
     background: var(--bg-surface-1);
+}
+
+.settings-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 .settings-table {
@@ -1178,6 +1192,215 @@ body::before {
     padding: 16px 20px 20px;
 }
 
+/* ============================================================================
+   DIFF MODE STYLES
+   ============================================================================ */
+
+.pane-header .diff-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0.25rem;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.pane-header .diff-icon:hover {
+    opacity: 0.8;
+}
+
+.pane-header .diff-icon.active {
+    background: var(--accent-secondary);
+    color: white;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
+}
+
+.diff-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1003;
+}
+
+.diff-overlay.open {
+    display: flex;
+}
+
+.diff-modal {
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-medium);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    max-height: 85vh;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.diff-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.diff-title h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-family: "Syne", system-ui, sans-serif;
+}
+
+.diff-subtitle {
+    margin: 4px 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.diff-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.diff-item {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.diff-item:hover {
+    border-color: var(--border-medium);
+    background: var(--bg-surface-2);
+}
+
+.diff-item.rejected {
+    opacity: 0.6;
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.05);
+}
+
+.diff-item.processed {
+    border-color: var(--border-soft);
+}
+
+.diff-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.diff-item-source {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.diff-item-actions {
+    display: none;
+    gap: 4px;
+}
+
+.diff-item:hover .diff-item-actions {
+    display: flex;
+}
+
+.diff-btn-accept,
+.diff-btn-reject {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.diff-btn-accept {
+    background: rgba(0, 255, 0, 0.15);
+    color: #00ff41;
+    border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.diff-btn-accept:hover {
+    background: rgba(0, 255, 65, 0.25);
+    border-color: rgba(0, 255, 65, 0.5);
+}
+
+.diff-btn-reject {
+    background: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.diff-btn-reject:hover {
+    background: rgba(255, 107, 107, 0.25);
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.diff-change {
+    display: flex;
+    gap: 8px;
+    font-family: "JetBrains Mono", "Menlo", "Monaco", monospace;
+    font-size: 0.9rem;
+}
+
+.diff-before,
+.diff-after {
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.diff-before {
+    background: rgba(255, 107, 107, 0.05);
+    border-left: 3px solid rgba(255, 107, 107, 0.4);
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+.diff-after {
+    background: rgba(0, 255, 65, 0.05);
+    border-left: 3px solid rgba(0, 255, 65, 0.4);
+    color: var(--accent-lime);
+    font-weight: 500;
+}
+
+.diff-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
 .secondary-button {
     padding: 8px 14px;
     border-radius: 6px;
@@ -1194,7 +1417,47 @@ body::before {
     color: var(--text-primary);
 }
 
-/* AI Format State (Red theme when AI detected) */
+/* Toast / Snackbar */
+.toast {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    transform: translateY(8px);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--accent-cyan);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: 0;
+    box-shadow: 0 0 0 1px var(--accent-cyan), var(--shadow-modal);
+    width: min(680px, calc(100vw - 32px));
+    font-size: 0.85rem;
+    line-height: 1.35;
+    font-family: "JetBrains Mono", "Menlo", "Monaco", monospace;
+    letter-spacing: 0.01em;
+    display: none;
+    opacity: 0;
+    transition: opacity 160ms ease, transform 160ms ease;
+    z-index: 1010;
+}
+
+.toast.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* AI Detection State (Crimson background when detected) */
+body[data-ai-detected="true"] {
+    /* Explicit user requirement: background turns crimson when detected */
+    --bg-app: crimson;
+    background: crimson;
+}
+
+body[data-ai-detected="true"]::before {
+    opacity: 0;
+}
+
+/* AI Format State (Red theme when AI detected + not acknowledged) */
 body[data-ai-format="true"] {
     --accent-primary: #e05252;
     --accent-hover: #e05252;
